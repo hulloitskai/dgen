@@ -6,30 +6,44 @@ import (
 	"os"
 )
 
-// Opts are flag-enabled options for dgen.
-var Opts struct {
-	// Stats will show statistics at the end of the string dump.
-	Stats bool `short:"s" long:"stats" description:"Show statistics after string dump."`
+var (
+	// Opts are flag-enabled options for dgen.
+	Opts struct {
+		// Stats will show statistics at the end of the string dump.
+		Stats bool `short:"s" long:"stats" description:"Show statistics after string dump."`
+	}
+
+	fparser = flags.NewParser(&Opts, flags.Default)
+)
+
+func showHelp() {
+	fparser.WriteHelp(os.Stdout)
 }
 
 func parseFlags() (args []string) {
-	args, err := flags.Parse(&Opts)
+	args, err := fparser.Parse()
 
 	if err != nil {
 		if flagerr, ok := err.(*flags.Error); ok {
 			switch flagerr.Type {
+			// Ignore minor parsing errors.
 			case flags.ErrDuplicatedFlag, flags.ErrInvalidChoice:
-				fmt.Printf("Warning: Caught a discrepancy while parsing flags: %v. "+
-					"Proceeding anyways...\n", err)
+				fmt.Println("Warning: Caught a discrepancy while parsing flags; " +
+					"proceeding anyways...")
 				return args
 
-			// Friendly exit if help flag was triggered.
+				// Friendly exit if help flag was triggered.
 			case flags.ErrHelp:
 				os.Exit(0)
 
+			case flags.ErrUnknownFlag:
+				fmt.Print("\n")
+				showHelp()
+				os.Exit(4)
+
 			default:
-				fmt.Fprintf(os.Stderr, "Failed to parse flags: %v (error type: %s)\n",
-					err, flagerr.Type)
+				fmt.Fprintln(os.Stderr, "Encountered flag parsing error of type:",
+					flagerr.Type)
 				os.Exit(4)
 			}
 		}

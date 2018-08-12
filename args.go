@@ -13,7 +13,9 @@ func parseArgs(args []string) (str string, reps int) {
 
 	if nargs == 0 {
 		// Quit if no arguments were received.
-		fmt.Fprintln(os.Stderr, "Did not receive any arguments! Exiting.")
+		fmt.Printf("Warning: Did not receive any arguments!\n\n")
+		showHelp()
+
 		os.Exit(2)
 	}
 	if nargs > 2 {
