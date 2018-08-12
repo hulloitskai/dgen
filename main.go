@@ -2,38 +2,35 @@ package main
 
 import (
 	"fmt"
+	"github.com/steven-xie/dgen/throughput"
 	"os"
-	"strconv"
+	"strings"
 )
 
 func main() {
-	// Check for arguments
-	args := os.Args
-	if len(args) < 2 {
-		fmt.Println("Did not receive any arguments! Exiting.")
-		os.Exit(1)
-	}
-	args = os.Args[1:]
+	args := parseFlags()
+	str, reps := parseArgs(args)
 
-	// Parse repeater string.
-	str := args[0]
-	repeats := 5000
+	n, err := throughput.Dump(str, reps, Bufsize, os.Stdout)
 
-	// Retreive repeats from input, if applicable.
-	if len(args) > 1 {
-		repeatstr := args[1]
-		var err error
-		if repeats, err = strconv.Atoi(repeatstr); err != nil {
-			fmt.Printf(
-				"Could not parse repeat argument (expected an int, got %v).\n",
-				repeatstr,
-			)
-			os.Exit(2)
+	// Ensure that if extra info is about to be produced, there are at least two
+	// newlines before that info is printed.
+	if err != nil || Opts.Stats {
+		nlcount := strings.Count(str, "\n")
+		switch nlcount {
+		case 0:
+			fmt.Print("\n\n")
+		case 1:
+			fmt.Print("\n")
 		}
 	}
 
-	// Write to output.
-	for i := 0; i < repeats; i++ {
-		os.Stdout.WriteString(str)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Encountered error while dumping source string:",
+			err)
+		os.Exit(7)
+	}
+	if Opts.Stats {
+		fmt.Printf("Successfully printed %d bytes.\n", n)
 	}
 }

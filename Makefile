@@ -12,7 +12,8 @@ COVER_OUT = coverage.txt
 
 ### Commands (targets):
 ## Prevent targeting filenames...
-.PHONY: default run build all all-bench check fmt test test-v test-race bench
+.PHONY: default run build install all all-bench check fmt test test-v \
+		test-race bench
 
 ## Default target when no arguments are given to make (build and run program).
 default: build run
@@ -35,6 +36,11 @@ build:
 	@printf "Building... "
 	@go build
 	@printf "done!\n"
+
+install:
+	@printf 'Installing with "go install"... '
+	@go install
+	@echo "done!"
 
 ## Formats, checks, and tests the code.
 review: fmt check test
@@ -82,4 +88,4 @@ test-race:
 	@$(GOTEST) -race
 bench:
 	@echo "Benchmarking..."
-	@go test -run=^$ -bench=. -benchmem
+	@go test ./... -run=$^ -bench=. -benchmem -memprofile mem.out
