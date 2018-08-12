@@ -2,6 +2,9 @@
 ## The compiled binary
 /dgen*
 
+## ---- CODECOV -----
+coverage.txt
+
 ## ----- GO -----
 ## Binaries for programs and plugins
 *.exe

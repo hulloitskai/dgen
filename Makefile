@@ -7,7 +7,7 @@ SRC_PKGS = $(shell go list ./... | grep -v /vendor/)
 
 ## Testing config
 TEST_TIMEOUT = 20s
-COVER_OUT = coverage.txt
+COVER_OUT = coverage.out
 
 
 ### Commands (targets):
@@ -76,7 +76,8 @@ fmt:
 		else printf "> ...all files formmatted correctly!\n"; fi
 
 ## Testing commands:
-GOTEST = go test ./... --coverprofile=$(COVER_OUT) --timeout=$(TEST_TIMEOUT)
+GOTEST = go test ./... -coverprofile=$(COVER_OUT) -covermode=atomic \
+	-timeout=$(TEST_TIMEOUT)
 test:
 	@echo "Testing:"
 	@$(GOTEST)
@@ -88,4 +89,4 @@ test-race:
 	@$(GOTEST) -race
 bench:
 	@echo "Benchmarking..."
-	@go test ./... -run=$^ -bench=. -benchmem -memprofile mem.out
+	@go test ./... -run=$^ -bench=. -benchmem
