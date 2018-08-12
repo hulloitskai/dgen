@@ -10,7 +10,8 @@ var (
 	// Opts are flag-enabled options for dgen.
 	Opts struct {
 		// Stats will show statistics at the end of the string dump.
-		Stats bool `short:"s" long:"stats" description:"Show statistics after string dump."`
+		Stats    bool `short:"s" long:"stats" description:"Show statistics after string dump."`
+		Preserve bool `short:"p" long:"preserve" description:"Preserve whitespacing; do not add terminating newlines."`
 	}
 
 	fparser = flags.NewParser(&Opts, flags.Default)

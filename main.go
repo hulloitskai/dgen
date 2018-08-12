@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/steven-xie/dgen/throughput"
 	"os"
-	"strings"
 )
 
 func main() {
@@ -13,16 +12,17 @@ func main() {
 
 	n, err := throughput.Dump(str, reps, Bufsize, os.Stdout)
 
+	hasnl := hasTrailingNewline(str)
 	// Ensure that if extra info is about to be produced, there are at least two
 	// newlines before that info is printed.
 	if err != nil || Opts.Stats {
-		nlcount := strings.Count(str, "\n")
-		switch nlcount {
-		case 0:
-			fmt.Print("\n\n")
-		case 1:
+		if hasnl {
 			fmt.Print("\n")
+		} else {
+			fmt.Print("\n\n")
 		}
+	} else if !Opts.Preserve && !hasnl {
+		fmt.Print("\n")
 	}
 
 	if err != nil {
@@ -33,4 +33,12 @@ func main() {
 	if Opts.Stats {
 		fmt.Printf("Successfully printed %d bytes.\n", n)
 	}
+}
+
+func hasTrailingNewline(s string) bool {
+	strlen := len(s)
+	if strlen < 1 {
+		return false
+	}
+	return s[strlen-1] == '\n'
 }

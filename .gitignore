@@ -1,6 +1,7 @@
 ## ----- REPOSITORY -----
-## The compiled binary
+## The compiled binary (excluding Go source files)
 /dgen*
+!/dgen*.go
 
 ## ---- CODECOV -----
 coverage.txt
