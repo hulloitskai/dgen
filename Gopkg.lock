@@ -10,19 +10,22 @@
   version = "v1.4.0"
 
 [[projects]]
-  digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
-  name = "github.com/pkg/errors"
-  packages = ["."]
+  branch = "master"
+  digest = "1:9d18619b92de73ad01107dfe8627242f9c2cb542aa7830f97e0d8f87ad808d8f"
+  name = "github.com/steven-xie/glip"
+  packages = [
+    ".",
+    "portal",
+  ]
   pruneopts = "UT"
-  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
-  version = "v0.8.0"
+  revision = "6e61c94a2cd489c64d99013dd6771f465a60ff54"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
     "github.com/jessevdk/go-flags",
-    "github.com/pkg/errors",
+    "github.com/steven-xie/glip",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

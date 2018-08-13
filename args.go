@@ -13,11 +13,12 @@ func parseArgs(args []string) (str string, reps int) {
 
 	if nargs == 0 {
 		// Quit if no arguments were received.
-		fmt.Printf("Warning: Did not receive any arguments!\n\n")
+		errln("Warning: Did not receive any arguments!\n")
 		showHelp()
 
 		os.Exit(2)
 	}
+
 	if nargs > 2 {
 		// Warn the user if more arguments were received than expected.
 		fmt.Printf("Warning: Received more than 2 arguments. Ignoring the " +

@@ -22,7 +22,10 @@ const (
 var (
 	// Presets is a map of string identifiers to repeat counts. Identifiers
 	// correspond to various messaging services.
-	Presets = map[string]uint{"fb": 5000}
+	Presets = map[string]uint{
+		"fb": 5000, "rpost": 40000, "rcomment": 10000, "rmsg": 10000,
+		"twitter": 280,
+	}
 )
 
 func parsePreset(id string) int {

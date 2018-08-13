@@ -9,13 +9,19 @@ import (
 var (
 	// Opts are flag-enabled options for dgen.
 	Opts struct {
-		// Stats will show statistics at the end of the string dump.
 		Stats    bool `short:"s" long:"stats" description:"Show statistics after string dump."`
 		Preserve bool `short:"p" long:"preserve" description:"Preserve whitespacing; do not add terminating newlines."`
+		Copy     bool `short:"c" long:"copy" description:"Write dump to clipboard, rather than to standard output."`
 	}
 
-	fparser = flags.NewParser(&Opts, flags.Default)
+	fparser = makeParser()
 )
+
+func makeParser() (p *flags.Parser) {
+	p = flags.NewParser(&Opts, flags.Default)
+	p.Usage = "[OPTIONS] <string> [<repeat count> | <preset name>]"
+	return p
+}
 
 func showHelp() {
 	fparser.WriteHelp(os.Stdout)
@@ -43,14 +49,12 @@ func parseFlags() (args []string) {
 				os.Exit(4)
 
 			default:
-				fmt.Fprintln(os.Stderr, "Encountered flag parsing error of type:",
-					flagerr.Type)
+				errln("Encountered flag parsing error of type:", flagerr.Type)
 				os.Exit(4)
 			}
 		}
 
-		fmt.Fprintln(os.Stderr, "Failed to parse given flags (unknown error type):",
-			err)
+		errln("Failed to parse given flags (unknown error type):", err)
 		os.Exit(5)
 	}
 	return args

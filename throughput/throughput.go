@@ -4,33 +4,23 @@ package throughput
 
 import (
 	"bytes"
-	"github.com/pkg/errors"
+	"errors"
+	"fmt"
+	"io"
 )
 
 // RecommendedBufSize is an arbitrary size recommended for Dump's "bufsize"
 // argument.
 const RecommendedBufSize = 1000
 
-// StringWriter is an io.Writer that is also capable of writing strings.
-type StringWriter interface {
-	// WriteString writes a string "s", and produces the number of bytes written,
-	// "n", and an error (if one occurred), "err".
-	WriteString(s string) (n int, err error)
-	// Write writes an array of bytes "p", returning the number of byte swritten,
-	// "n", and an error (if one occurred), "err".
-	Write(p []byte) (n int, err error)
-}
-
 // Dump repeats the string "in", and streams the output to "out". Takes in a
 // "bufsize" arguments that indicates the maximum string size (in bytes) for
 // which a buffering strategy should be used to reduce the frequency of writes
 // to "out".
-func Dump(
-	in string, repeats, bufsize int, out StringWriter,
-) (n int, err error) {
+func Dump(in string, repeats, bufsize int, out io.Writer) (n int, err error) {
 	// Validate "repeats" argument.
 	if repeats < 0 {
-		return n, errors.Errorf("cannot repeat a string a negative (%d) number of"+
+		return n, fmt.Errorf("cannot repeat a string a negative (%d) number of"+
 			"times", repeats)
 	}
 
@@ -55,14 +45,15 @@ func Dump(
 			// This does not count for bytes since we are internally recording the
 			// result.
 			if _, err = buf.WriteString(in); err != nil {
-				return n, errors.Wrap(err, "failed to write string to internal buffer")
+				return n, fmt.Errorf("failed to write string to internal buffer: %v",
+					err)
 			}
 		} else {
-			ntmp, err = out.WriteString(in)
+			ntmp, err = io.WriteString(out, in)
 			// This counts for bytes since output is actually written.
 			n += ntmp
 			if err != nil {
-				return n, errors.Wrap(err, "failed to write string to output")
+				return n, fmt.Errorf("failed to write string to output: %v", err)
 			}
 			// We are done, since we do not have to deal with the buffer.
 			continue
@@ -75,10 +66,14 @@ func Dump(
 		if buf.Len()+strlen > bufsize || i == repeats {
 			n64tmp, err = buf.WriteTo(out)
 			n += int(n64tmp)
+			if err != nil {
+				return n, fmt.Errorf("failed to write buffered string to output: %v",
+					err)
+			}
 
-			// If an error occurred, or we are at the final iteration, return.
-			if err != nil || i == repeats {
-				return n, err
+			// Return if at the final iteration.
+			if i == repeats {
+				return n, nil
 			}
 
 			// Reset the buffer if we are not at the final iteration.
