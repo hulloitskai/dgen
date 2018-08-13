@@ -57,7 +57,7 @@ sports the following benchmark:
 - **Repetitions:** 1,000,000
 - **Duration:** 25.050 seconds
 - **Milliseconds / operation:** 0.025039
-- **Byte allocated / operation:** 21
+- **Bytes allocated / operation:** 21
 - **Allocations / operation:** 0
 
 ## Integration
