@@ -20,8 +20,8 @@ const RecommendedBufSize = 1000
 func Dump(in string, repeats, bufsize int, out io.Writer) (n int, err error) {
 	// Validate "repeats" argument.
 	if repeats < 0 {
-		return n, fmt.Errorf("cannot repeat a string a negative (%d) number of"+
-			"times", repeats)
+		return n, fmt.Errorf("throughput: cannot repeat a string a negative (%d) "+
+			"number of times", repeats)
 	}
 
 	var (
@@ -41,34 +41,33 @@ func Dump(in string, repeats, bufsize int, out io.Writer) (n int, err error) {
 	}
 
 	for i := 1; i <= repeats; i++ {
-		if usebuf {
-			// This does not count for bytes since we are internally recording the
-			// result.
-			if _, err = buf.WriteString(in); err != nil {
-				return n, fmt.Errorf("failed to write string to internal buffer: %v",
-					err)
-			}
-		} else {
+		if !usebuf {
 			ntmp, err = io.WriteString(out, in)
 			// This counts for bytes since output is actually written.
 			n += ntmp
 			if err != nil {
-				return n, fmt.Errorf("failed to write string to output: %v", err)
+				return n, fmt.Errorf("throughput: failed to write string to output: %v",
+					err)
 			}
 			// We are done, since we do not have to deal with the buffer.
 			continue
 		}
 
+		// This does not count for bytes since we are internally recording the
+		// result.
+		if _, err = buf.WriteString(in); err != nil {
+			return n, fmt.Errorf("throughput: failed to write string to internal "+
+				"buffer: %v", err)
+		}
+
 		// If adding one more string to the buffer will make it larger than the
 		// buffer's capacity, pipe the buffer to output, and reset the buffer.
-		//
-		// If this is the final iteration, just pipe the buffer to output.
 		if buf.Len()+strlen > bufsize || i == repeats {
 			n64tmp, err = buf.WriteTo(out)
 			n += int(n64tmp)
 			if err != nil {
-				return n, fmt.Errorf("failed to write buffered string to output: %v",
-					err)
+				return n, fmt.Errorf("throughput: failed to write buffered string to "+
+					"output: %v", err)
 			}
 
 			// Return if at the final iteration.
@@ -77,10 +76,16 @@ func Dump(in string, repeats, bufsize int, out io.Writer) (n int, err error) {
 			}
 
 			// Reset the buffer if we are not at the final iteration.
-			buf = bytes.NewBuffer(make([]byte, 0, bufsize))
+			buf.Reset()
 		}
 	}
 
-	return n, errors.New("Dump unexpectedly reached the end of the function; " +
-		"expected to terminate within the string-repeat loop")
+	if usebuf {
+		// When we have a buffer, we always want to terminate within the for
+		// loop, so that we can empty the remaining contents of the buffer.
+		return n, errors.New("throughput: failed to terminate string-repeat loop " +
+			"correctly")
+	}
+
+	return n, nil
 }

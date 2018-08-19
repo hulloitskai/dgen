@@ -13,7 +13,9 @@ before_install:
 
 install: dep ensure
 
-script: make review-race
+script:
+  - make review-race
+  - make build
 
-after_success:
+after_script:
   - bash <(curl -s https://codecov.io/bash)

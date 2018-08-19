@@ -1,0 +1,36 @@
+version: '{branch}-{build}'
+image:
+  - Visual Studio 2015
+  - Visual Studio 2017
+
+clone_depth: 3
+clone_folder: C:\gopath\src\github.com\steven-xie\dgen
+
+environment:
+  GOPATH: C:\gopath
+  GOBIN: '%GOPATH%\bin'
+
+stack: go 1.10
+
+platform:
+  - x86
+  - x64
+
+init:
+  - git config --global core.autocrlf input
+
+install:
+  - set PATH=C:\cygwin\bin;%PATH%
+  - go get ./...
+  - echo %GOPATH%
+  - go version
+  - go env
+
+build: off
+deploy: off
+
+build_script:
+  - make build
+
+test_script:
+  - make test-race
