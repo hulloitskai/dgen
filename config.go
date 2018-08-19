@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/steven-xie/dgen/throughput"
 	"os"
 )
 
@@ -14,9 +13,6 @@ const (
 	// DefaultReps is the default number of repeats, used if not otherwise
 	// specified.
 	DefaultReps = 10
-	// Bufsize is the buffer size passed to throughput.Dump to configure its
-	// buffering strategy.
-	Bufsize = throughput.RecommendedBufSize
 )
 
 var (

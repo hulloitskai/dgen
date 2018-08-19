@@ -3,8 +3,9 @@
 _A clipboard interface for Go, compatible with Windows, Mac OS X, and Linux._
 
 [![godoc: reference][godoc-img]][godoc]
-[![travis: build][travis-img]][travis]
 [![codecov: coverage][codecov-img]][codecov]
+[![travis: build][travis-img]][travis]
+[![appveyor: build][appveyor-img]][appveyor]
 
 ## Usage
 
@@ -39,22 +40,24 @@ func main() {
 
 ### Windows:
 
-`glip` uses the `paste` and `copy` commands on Windows to manipulate the
-clipboard. This is available _starting from Windows 7, and onwards_.
+`glip` uses the `clip` commands on Windows to write to the system clipboard.
+This is available _starting from Windows 7, and onwards_.
 
-_`glip` has not yet been tested on Windows!_
+No native paste command is availble on Windows, but if
+[this third-party `paste` command](https://www.c3scripts.com/tutorials/msdos/paste.html)
+is installed, it will be used to read from the system clipboard.
 
 ### Mac OS X:
 
-`glip` uses `pbcopy` and `pbpaste` commands on OS X; this has been available
-since 2005, so no compatibility worries here.
+`glip` uses `pbcopy` and `pbpaste` commands on OS X; these commands have been
+available since 2005, so no compatibility worries here.
 
 ### Linux:
 
 `glip` requires the _installation of either `xclip` or `xsel`_ to function on
-Linux (since there's no built-in clipboard interface). `glip` will choose
-one of those two programs automatically, unless you build a custom board with
-the `NewLinuxBoard` function.
+Linux (since there's no built-in clipboard interface). `glip` will choose one
+of those two programs automatically, unless you build a custom board with the
+`NewLinuxBoard` function.
 
 _`glip` has not been tested yet on Linux!_
 
@@ -62,13 +65,9 @@ _`glip` has not been tested yet on Linux!_
 
 ## glipboard
 
-`glipboard` is a basic cross-platform command-line clipboard interface
-which uses `glip` underneath the hood.
-
-It was developed as an example of how `glip` can be used, as well as to be a
-universal clipboard interface that other external programs can call in order to
-write to a system clipboard, if the underlying platform-specific command is
-available. _No more platform-specific tomfoolery!_
+For an example of an application that uses `glip`, check out
+[`glipboard`](https://github.com/steven-xie/glipboard), a universal clipboard
+command-line accessor.
 
 [godoc]: https://godoc.org/github.com/steven-xie/glip
 [godoc-img]: https://godoc.org/github.com/steven-xie/glip?status.svg
@@ -76,3 +75,5 @@ available. _No more platform-specific tomfoolery!_
 [travis-img]: https://travis-ci.org/steven-xie/glip.svg?branch=master
 [codecov]: https://codecov.io/gh/steven-xie/glip
 [codecov-img]: https://codecov.io/gh/steven-xie/glip/branch/master/graph/badge.svg
+[appveyor]: https://ci.appveyor.com/project/StevenXie/glip
+[appveyor-img]: https://ci.appveyor.com/api/projects/status/ntdxh30vlbo55da7?svg=true

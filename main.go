@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/steven-xie/dgen/throughput"
 	"github.com/steven-xie/glip"
@@ -12,18 +13,27 @@ func main() {
 	args := parseFlags()
 	str, reps := parseArgs(args)
 
-	// Set up output device.
-	var out io.Writer = os.Stdout
+	// Set up output device and buffer size.
+	var (
+		out     io.ReadWriter = os.Stdout
+		bufsize               = throughput.RecommendedBufSize
+	)
+	if Opts.Copy {
+		out = new(bytes.Buffer)
+		// Disallow buffering when using clipboard.
+		bufsize = 0
+	}
+
+	n, err := throughput.Dump(str, reps, bufsize, out)
+
 	if Opts.Copy {
 		board, err := glip.NewBoard()
 		if err != nil {
 			errln("Failed to open system clipboard:", err)
 			os.Exit(1)
 		}
-		out = board
+		board.ReadFrom(out)
 	}
-
-	n, err := throughput.Dump(str, reps, Bufsize, out)
 
 	// If wrote to os.Sdout...
 	if !Opts.Copy {
