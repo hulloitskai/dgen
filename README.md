@@ -93,4 +93,4 @@ func main() {
 [codecov-img]: https://codecov.io/gh/steven-xie/dgen/branch/master/graph/badge.svg
 [codecov]: https://codecov.io/gh/steven-xie/dgen
 [appveyor]: https://ci.appveyor.com/project/StevenXie/dgen-p2xgh
-[appveyor-img]: https://ci.appveyor.com/api/projects/status/wrry9krp1kkx4hsi?svg=true
+[appveyor-img]: https://ci.appveyor.com/api/projects/status/wrry9krp1kkx4hsi/branch/master?svg=true

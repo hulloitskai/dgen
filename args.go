@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"strconv"
 )
@@ -13,7 +13,7 @@ func parseArgs(args []string) (str string, reps int) {
 
 	if nargs == 0 {
 		// Quit if no arguments were received.
-		errf("Warning: Did not receive any arguments!\n\n")
+		log.Print("Warning: Did not receive any arguments!\n\n")
 		showHelp()
 
 		os.Exit(2)
@@ -21,11 +21,11 @@ func parseArgs(args []string) (str string, reps int) {
 
 	if nargs > 2 {
 		// Warn the user if more arguments were received than expected.
-		fmt.Printf("Warning: Received more than 2 arguments. Ignoring the " +
-			"following arguments:\n")
+		log.Printf("Warning: Received more than 2 arguments. Ignoring the " +
+			"following arguments:")
 
 		for _, arg := range args[2:] {
-			fmt.Printf("  – \"%s\"\n", arg)
+			log.Printf("  – \"%s\"", arg)
 		}
 	}
 

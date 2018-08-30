@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	flags "github.com/jessevdk/go-flags"
+	"log"
 	"os"
 )
 
@@ -35,7 +36,7 @@ func parseFlags() (args []string) {
 			switch flagerr.Type {
 			// Ignore minor parsing errors.
 			case flags.ErrDuplicatedFlag, flags.ErrInvalidChoice:
-				fmt.Println("Warning: Caught a discrepancy while parsing flags; " +
+				log.Println("Warning: Caught a discrepancy while parsing flags; " +
 					"proceeding anyways...")
 				return args
 
@@ -46,16 +47,14 @@ func parseFlags() (args []string) {
 			case flags.ErrUnknownFlag:
 				fmt.Print("\n")
 				showHelp()
-				os.Exit(4)
+				os.Exit(1)
 
 			default:
-				errln("Encountered flag parsing error of type:", flagerr.Type)
-				os.Exit(4)
+				log.Fatalln("Encountered flag parsing error of type:", flagerr.Type)
 			}
 		}
 
-		errln("Failed to parse given flags (unknown error type):", err)
-		os.Exit(5)
+		log.Fatalln("Failed to parse given flags (unknown error type):", err)
 	}
 	return args
 }

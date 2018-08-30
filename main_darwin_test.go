@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestMain_copymode(t *testing.T) {
+func TestMain_copyopt(t *testing.T) {
 	const (
 		in     = "testing text "
 		repstr = "2"

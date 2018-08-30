@@ -6,8 +6,13 @@ import (
 	"github.com/steven-xie/dgen/throughput"
 	"github.com/steven-xie/glip"
 	"io"
+	"log"
 	"os"
 )
+
+func init() {
+	configureLog()
+}
 
 func main() {
 	args := parseFlags()
@@ -29,8 +34,7 @@ func main() {
 	if Opts.Copy {
 		board, err := glip.NewBoard()
 		if err != nil {
-			errln("Failed to open system clipboard:", err)
-			os.Exit(1)
+			log.Fatalln("Failed to open system clipboard:", err)
 		}
 		board.ReadFrom(out)
 	}
@@ -53,8 +57,7 @@ func main() {
 	}
 
 	if err != nil {
-		errln("Encountered error while dumping source string:", err)
-		os.Exit(7)
+		log.Fatalln("Encountered error while dumping source string:", err)
 	}
 
 	if Opts.Stats {

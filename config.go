@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"log"
 )
 
 /////////////////////////////
@@ -27,8 +26,7 @@ var (
 func parsePreset(id string) int {
 	p, ok := Presets[id]
 	if !ok {
-		fmt.Fprintf(os.Stderr, "Could not find preset: %s\n", id)
-		os.Exit(6)
+		log.Fatalf("Could not find preset: %s", id)
 	}
 	return int(p)
 }
