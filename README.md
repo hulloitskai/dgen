@@ -4,9 +4,10 @@ _A command-line tool designed for repeating a string an excessive number of
 times._
 
 [![godoc: reference][godoc-img]][godoc]
-[![codecov: coverage][codecov-img]][codecov]
+[![go report card][goreportcard-img]][goreportcard]
 [![travis: build][travis-img]][travis]
 [![appveyor: build][appveyor-img]][appveyor]
+[![codecov: coverage][codecov-img]][codecov]
 
 ## Installation
 
@@ -94,3 +95,5 @@ func main() {
 [codecov]: https://codecov.io/gh/steven-xie/dgen
 [appveyor]: https://ci.appveyor.com/project/StevenXie/dgen-p2xgh
 [appveyor-img]: https://ci.appveyor.com/api/projects/status/wrry9krp1kkx4hsi/branch/master?svg=true
+[goreportcard]: https://goreportcard.com/report/github.com/steven-xie/dgen
+[goreportcard-img]: https://goreportcard.com/badge/github.com/steven-xie/dgen
