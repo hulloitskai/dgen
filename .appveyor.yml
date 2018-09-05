@@ -8,29 +8,62 @@ clone_folder: C:\gopath\src\github.com\steven-xie\dgen
 
 environment:
   GOPATH: C:\gopath
-  GOBIN: '%GOPATH%\bin'
-
-stack: go 1.10
+  GO111MODULE: "on"
+  GCC: x86_64-w64-mingw32-gcc.exe
+  MINGW64_DIR: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin
+  matrix:
+    - GOROOT: C:\go
 
 platform:
-  - x86
   - x64
+  - x86
+
+matrix:
+  ## Calling PowerShell externally doesn't seem to be particularly stable
+  ## on x86.
+  allow_failures:
+    - platform: x86
+
+cache:
+  ## Preserve Go module cache.
+  - "%GOPATH%\\pkg\\mod\\cache"
 
 init:
   - git config --global core.autocrlf input
 
 install:
-  - set PATH=C:\cygwin\bin;%PATH%
-  - go get ./...
+  ## Configure MinGW, put proper GOBIN at the front of the path.
+  - set PATH=%GOROOT%\bin;%MINGW64_DIR%;%PATH%
+
+  ## Configure testing environment.
+  - ps: if ($env:PLATFORM -Eq "x86") { $env:GOARCH = "386" }
+
+  ## Install dependencies.
+  - mingw32-make get
+
+  ## Log diagonistic information.
   - echo %GOPATH%
   - go version
   - go env
+  - ps: $PSVersionTable.PSVersion
 
 build: off
 deploy: off
 
-build_script:
-  - make build
-
 test_script:
-  - make test-race
+  - ps: |
+      if ($env:PLATFORM -Eq "x86") {
+        ## Emulate tests on an x86 architecture.
+        mingw32-make test-v
+      } else {
+        ## Test race conditions only on x64.
+        mingw32-make test-race-v
+      }
+
+after_test:
+  - ps: |
+      if (Test-Path -PathType Leaf -Path "coverage.out") {
+        $env:PATH = "C:\msys64\usr\bin;${env:PATH}"
+        Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
+        bash codecov.sh
+      }

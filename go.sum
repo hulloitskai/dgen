@@ -1,0 +1,6 @@
+github.com/jessevdk/go-flags v1.4.0 h1:4IU2WS7AumrZ/40jfhf4QVDMsQwqA7VEHozFRrGARJA=
+github.com/jessevdk/go-flags v1.4.0/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
+github.com/steven-xie/glip v1.0.0 h1:YeZcV2bgnvngDeLi62Ck7exi//zz0PmDEpHvS7uYhT8=
+github.com/steven-xie/glip v1.0.0/go.mod h1:7//Wcz3pRKb1c7mJpki9VVWiVM0GlqC3oi369FqXZY8=
+github.com/steven-xie/glip v1.1.0 h1:aB7PWAs+5tq4rYuTfUeWd/4Ke6wSDMfWQ2BwRx5FNTc=
+github.com/steven-xie/glip v1.1.0/go.mod h1:7//Wcz3pRKb1c7mJpki9VVWiVM0GlqC3oi369FqXZY8=
