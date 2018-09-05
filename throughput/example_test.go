@@ -5,8 +5,8 @@ import (
 	"os"
 )
 
-func ExampleDump() {
-	const exampleIn = "test string "
-	throughput.Dump(exampleIn, 3, throughput.RecommendedBufSize, os.Stdout)
+func Example() {
+	const repstr = "test string "
+	throughput.Dump(repstr, 3, throughput.RecommendedBufSize, os.Stdout)
 	// Output: test string test string test string
 }

@@ -2,32 +2,21 @@ package glip
 
 import (
 	"github.com/steven-xie/glip/portal"
-	"os/exec"
+	"io"
 )
 
 // Board is capable of both reading and writing to the system clipboard.
 //
-// It implements io.Reader, io.Writer, and io.WriterTo.
-type Board struct {
-	CopyPortal  *portal.Portal
-	PastePortal *portal.Portal
-}
-
-// MakeBoard creates a Board by wrapping "copyCmd" and "pastCmd" into
-// portal.Portals.
-func MakeBoard(copyCmd, pasteCmd *exec.Cmd) *Board {
-	return &Board{
-		CopyPortal:  portal.MakeFrom(copyCmd),
-		PastePortal: portal.MakeFrom(pasteCmd),
-	}
-}
-
-// IsReadable determines if clipboard data can be read using Board.
-func (b *Board) IsReadable() bool {
-	return b.PastePortal != nil
-}
-
-// IsWriteable determines if clipboard data can be written using board.
-func (b *Board) IsWriteable() bool {
-	return b.CopyPortal != nil
+// It implements a lot of interfaces for reading and writing, but also exposes
+// a method for accessing the underlying portal.Portal that represents its
+// underlying program(s).
+type Board interface {
+	ReadPortal() *portal.Portal
+	WritePortal() *portal.Portal
+	ReadString() (s string, err error)
+	WriteString(s string) (n int, err error)
+	io.Reader
+	io.Writer
+	io.ReaderFrom
+	io.WriterTo
 }

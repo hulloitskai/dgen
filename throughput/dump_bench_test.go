@@ -5,8 +5,7 @@ import (
 	"testing"
 )
 
-const In = "throughput test string "
-
 func BenchmarkDump(b *testing.B) {
-	Dump(In, b.N, RecommendedBufSize, os.Stdout)
+	const in = "throughput test string "
+	Dump(in, b.N, RecommendedBufSize, os.Stdout)
 }

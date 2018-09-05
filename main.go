@@ -10,23 +10,20 @@ import (
 	"os"
 )
 
-func init() {
-	configureLog()
-}
+// out is the io.ReadWriter that dgen will write to.
+var out io.ReadWriter = os.Stdout
 
 func main() {
-	args := parseFlags()
-	str, reps := parseArgs(args)
-
-	// Set up output device and buffer size.
+	// Set up flags and buffer size.
 	var (
-		out     io.ReadWriter = os.Stdout
-		bufsize               = throughput.RecommendedBufSize
+		args      = parseFlags()
+		str, reps = parseArgs(args)
+		bufsize   = throughput.RecommendedBufSize
 	)
+
 	if Opts.Copy {
 		out = new(bytes.Buffer)
-		// Disallow buffering when using clipboard.
-		bufsize = 0
+		bufsize = 0 // disallow buffering when using clipboard
 	}
 
 	n, err := throughput.Dump(str, reps, bufsize, out)
@@ -39,8 +36,7 @@ func main() {
 		board.ReadFrom(out)
 	}
 
-	// If wrote to os.Sdout...
-	if !Opts.Copy {
+	if !Opts.Copy { // if wrote to os.Stdout
 		hasnl := hasTrailingNewline(str)
 
 		// Ensure that if extra info is about to be produced, there are at least two

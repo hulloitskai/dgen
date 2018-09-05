@@ -31,7 +31,7 @@ func parseArgs(args []string) (str string, reps int) {
 
 	str = args[0]
 	if nargs == 1 {
-		return str, DefaultReps
+		return str, defaultReps
 	}
 
 	repstr := args[1]

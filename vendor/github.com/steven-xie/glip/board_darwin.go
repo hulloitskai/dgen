@@ -2,24 +2,13 @@
 
 package glip
 
-import "os/exec"
+import "fmt"
 
-// NewBoard creates a new Board, if all the necessary system commands ar
-// available.
-func NewBoard() (b *Board, err error) {
-	const (
-		copyCmdName  = "pbcopy"
-		pasteCmdName = "pbpaste"
-	)
-
-	// Verify availability of system commands...
-	if err = verifyCommands(copyCmdName, pasteCmdName); err != nil {
-		return nil, err
+// NewBoard creates a new Board, using a program automatically selected based
+// on the operating system and available system commands.
+func NewBoard() (b Board, err error) {
+	if b, err = NewDarwinBoard(); err != nil {
+		return nil, fmt.Errorf("glip: could not create Board: %v", err)
 	}
-
-	b = MakeBoard(
-		exec.Command(copyCmdName),
-		exec.Command(pasteCmdName),
-	)
-	return b, nil
+	return b, err
 }

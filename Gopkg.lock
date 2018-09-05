@@ -10,15 +10,15 @@
   version = "v1.4.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:f917730dc54898009496be48e65745a7dc1cadf60d76e96ac075420fbd1a0d57"
+  digest = "1:07eb96746778f18904a9855d6dcaec901c2d9bc1ae24823040e90c55888a86ae"
   name = "github.com/steven-xie/glip"
   packages = [
     ".",
     "portal",
   ]
   pruneopts = "UT"
-  revision = "432c4b645d3315658b8da27a89f257dc444dd997"
+  revision = "9fc7212143abe870769504f0ec3b174376597110"
+  version = "v1.1.0"
 
 [solve-meta]
   analyzer-name = "dep"

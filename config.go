@@ -4,27 +4,31 @@ import (
 	"log"
 )
 
-/////////////////////////////
-// Configurable constants
-/////////////////////////////
+func init() {
+	// Only write the log message to os.Stderr.
+	log.SetFlags(0)
+}
 
 const (
-	// DefaultReps is the default number of repeats, used if not otherwise
+	// defaultReps is the default number of repeats, used if not otherwise
 	// specified.
-	DefaultReps = 10
+	defaultReps = 10
 )
 
 var (
-	// Presets is a map of string identifiers to repeat counts. Identifiers
+	// presets is a map of string identifiers to repeat counts. Identifiers
 	// correspond to various messaging services.
-	Presets = map[string]uint{
-		"fb": 5000, "rpost": 40000, "rcomment": 10000, "rmsg": 10000,
-		"twitter": 280,
+	presets = map[string]uint{
+		"fb":       5000,
+		"rpost":    40000,
+		"rcomment": 10000,
+		"rmsg":     10000,
+		"twitter":  280,
 	}
 )
 
 func parsePreset(id string) int {
-	p, ok := Presets[id]
+	p, ok := presets[id]
 	if !ok {
 		log.Fatalf("Could not find preset: %s", id)
 	}

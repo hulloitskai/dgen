@@ -63,9 +63,9 @@ sports the following benchmark:
 
 ## Integration
 
-`dgen` is a wrapper around an internal library, `throughput`, which contains
-the real repeating and buffering logic. To create a program that is able to
-use `dgen`'s string dumping algorithm, simply import `throughput`:
+`dgen` is a thin wrapper around an internal library, `throughput`, which
+contains the actual repeating and buffering logic. To create a program with
+`dgen`'s string dumping capabilities, simply import `throughput`:
 
 ```go
 import (
@@ -76,13 +76,13 @@ import (
 
 func main() {
   const (
-    in      = "test string "
+    repstr  = "test string "
     reps    = 5000
-    bufsize = 3000
+    bufsize = throughput.RecommendedBufSize
   )
 
   // Dump "test string " 5000 times into os.Stdout.
-  throughput.Dump(in, reps, bufsize, os.Stdout)
+  throughput.Dump(repstr, reps, bufsize, os.Stdout)
 }
 ```
 

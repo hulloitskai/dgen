@@ -9,23 +9,29 @@ import (
 	"io"
 )
 
-// RecommendedBufSize is an arbitrary size recommended for Dump's "bufsize"
+// RecommendedBufSize is the buffer size recommended for Dump's bufsize
 // argument.
+//
+// It is roughly based on the speed of writing to os.Stdout. A different size
+// should be considered for programs that do not write directly to the display.
 const RecommendedBufSize = 1000
 
-// Dump repeats the string "in", and streams the output to "out". Takes in a
-// "bufsize" arguments that indicates the maximum string size (in bytes) for
+// Dump repeats s, and streams the result to out.
+//
+// Dump's bufsize argument indicates the maximum string size (in bytes) for
 // which a buffering strategy should be used to reduce the frequency of writes
-// to "out".
-func Dump(in string, repeats, bufsize int, out io.Writer) (n int, err error) {
-	// Validate "repeats" argument.
+// to out.
+//
+// To disable buffering entirely, set bufsize to 0.
+func Dump(s string, repeats, bufsize int, out io.Writer) (n int, err error) {
+	// Validate repeats.
 	if repeats < 0 {
 		return n, fmt.Errorf("throughput: cannot repeat a string a negative (%d) "+
 			"number of times", repeats)
 	}
 
 	var (
-		strlen = len(in)
+		strlen = len(s)
 		// usebuf describes whether or not to use a buffering strategy.
 		usebuf = strlen < bufsize
 
@@ -42,7 +48,7 @@ func Dump(in string, repeats, bufsize int, out io.Writer) (n int, err error) {
 
 	for i := 1; i <= repeats; i++ {
 		if !usebuf {
-			ntmp, err = io.WriteString(out, in)
+			ntmp, err = io.WriteString(out, s)
 			// This counts for bytes since output is actually written.
 			n += ntmp
 			if err != nil {
@@ -55,7 +61,7 @@ func Dump(in string, repeats, bufsize int, out io.Writer) (n int, err error) {
 
 		// This does not count for bytes since we are internally recording the
 		// result.
-		if _, err = buf.WriteString(in); err != nil {
+		if _, err = buf.WriteString(s); err != nil {
 			return n, fmt.Errorf("throughput: failed to write string to internal "+
 				"buffer: %v", err)
 		}
