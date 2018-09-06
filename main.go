@@ -8,26 +8,38 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 )
 
 // out is the io.ReadWriter that dgen will write to.
 var out io.ReadWriter = os.Stdout
 
 func main() {
-	// Set up flags and buffer size.
+	// Read flags, initialize variables.
 	var (
 		args      = parseFlags()
 		str, reps = parseArgs(args)
 		bufsize   = throughput.RecommendedBufSize
+		start     time.Time
+		duration  time.Duration
 	)
 
+	// When using clipboard, output to a temporary buffer and disable
+	// throughput.Dump's buffering strategy.
 	if Opts.Copy {
 		out = new(bytes.Buffer)
-		bufsize = 0 // disallow buffering when using clipboard
+		bufsize = 0
+	}
+
+	// If the Stats opt is enabled, recording the start time.
+	if Opts.Stats {
+		start = time.Now()
 	}
 
 	n, err := throughput.Dump(str, reps, bufsize, out)
 
+	// If the Copy opt is enabled, pipe data from the temporary buffer into the
+	// clipboard.
 	if Opts.Copy {
 		board, err := glip.NewBoard()
 		if err != nil {
@@ -36,19 +48,24 @@ func main() {
 		board.ReadFrom(out)
 	}
 
+	// Record duration if the Stats opt is enabled.
+	if Opts.Stats {
+		duration = time.Since(start)
+	}
+
 	if !Opts.Copy { // if wrote to os.Stdout
 		hasnl := hasTrailingNewline(str)
 
 		// Ensure that if extra info is about to be produced, there are at least two
 		// newlines before that info is printed.
-		if err != nil || Opts.Stats {
+		if err != nil || Opts.Stats { // extra info will be printed
 			if hasnl {
-				fmt.Print("\n")
+				io.WriteString(os.Stdout, "\n")
 			} else {
-				fmt.Print("\n\n")
+				io.WriteString(os.Stdout, "\n\n")
 			}
 		} else if !Opts.Preserve && !hasnl {
-			fmt.Print("\n")
+			io.WriteString(os.Stdout, "\n")
 		}
 	}
 
@@ -57,7 +74,7 @@ func main() {
 	}
 
 	if Opts.Stats {
-		fmt.Printf("Successfully printed %d bytes.\n", n)
+		fmt.Printf("Successfully printed %d bytes in %s.\n", n, duration.String())
 	}
 }
 

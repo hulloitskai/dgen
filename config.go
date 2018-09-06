@@ -1,8 +1,16 @@
 package main
 
-import (
-	"log"
-)
+import "log"
+
+// Config represents dgen's configurable options.
+type Config struct {
+	Stats    bool `short:"s" long:"stats" description:"Show statistics after string dump."`
+	Preserve bool `short:"p" long:"preserve" description:"Preserve whitespacing; do not add terminating newlines."`
+	Copy     bool `short:"c" long:"copy" description:"Write dump to clipboard, rather than to standard output. Implies --preserve."`
+}
+
+// Opts is dgen's active configuration, parsed from flags found in os.Args.
+var Opts Config
 
 func init() {
 	// Only write the log message to os.Stderr.
