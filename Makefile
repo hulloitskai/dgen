@@ -12,7 +12,7 @@ COVER_OUT = coverage.out
 
 ## ------ Commands (targets) -----
 ## Prevent targeting filenames...
-.PHONY: default init setup verify run build install get update fix \
+.PHONY: default init setup verify dl run build install get update fix \
 		_review_base review review-race review-bench check fmt test test-v \
 		test-race bench
 
@@ -44,7 +44,7 @@ run:
 ## Builds the program specified by the main package.
 build:
 	@printf "Building... "
-	@GOBUILD_OUT="$$(go build ./... 2>&1)"; \
+	@GOBUILD_OUT="$$(go build 2>&1)"; \
 		if [ -n "$$GOBUILD_OUT" ]; then \
 		  printf "\n[ERROR] Failed to build program:\n"; \
 		  printf "$$GOBUILD_OUT\n"; \
@@ -85,8 +85,7 @@ update:
 fix:
 	@printf 'Fixing Go code with "go fix"... '
 	@GOFIX_OUT="$$(go fix 2>&1)"; \
-		if [ -n "$$GOFIX_OUT" ]; then \
-		  printf "\n$$GOFIX_OUT\n"; \
+		if [ -n "$$GOFIX_OUT" ]; then printf "\n$$GOFIX_OUT\n"; \
 		else printf "done.\n"; \
 		fi
 
@@ -95,6 +94,13 @@ verify:
 	@printf "Verifying Go module dependencies:\n"
 	@go mod verify
 
+## Downloads Go module dependencies.
+dl:
+	@printf "Downloading Go modules... "
+	@DL_OUT="$$(go mod download)"; \
+		if [ -n "$$DL_OUT" ]; then printf "\n$$DL_OUT\n"; \
+		else printf "done.\n"; \
+		fi
 
 ## Formats, checks, and tests the code.
 _review_base: verify fmt check
