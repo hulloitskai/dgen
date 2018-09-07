@@ -74,7 +74,12 @@ func main() {
 	}
 
 	if Opts.Stats {
-		fmt.Fprintf(out, "Successfully printed %d bytes in %s.\n", n,
+		verb := "printed"
+		if Opts.Copy {
+			verb = "copied"
+		}
+
+		fmt.Fprintf(out, "Successfully %s %d bytes in %s.\n", verb, n,
 			duration.String())
 	}
 }
