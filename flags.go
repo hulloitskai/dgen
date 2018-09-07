@@ -7,29 +7,22 @@ import (
 	"os"
 )
 
-var (
-	// Opts are flag-enabled options for dgen.
-	Opts struct {
-		Stats    bool `short:"s" long:"stats" description:"Show statistics after string dump."`
-		Preserve bool `short:"p" long:"preserve" description:"Preserve whitespacing; do not add terminating newlines."`
-		Copy     bool `short:"c" long:"copy" description:"Write dump to clipboard, rather than to standard output."`
-	}
+var fp = flagParser()
 
-	fparser = makeParser()
-)
-
-func makeParser() (p *flags.Parser) {
-	p = flags.NewParser(&Opts, flags.Default)
+func flagParser() *flags.Parser {
+	p := flags.NewParser(&Opts, flags.Default)
 	p.Usage = "[OPTIONS] <string> [<repeat count> | <preset name>]"
 	return p
 }
 
 func showHelp() {
-	fparser.WriteHelp(os.Stdout)
+	fp.WriteHelp(out)
 }
 
 func parseFlags() (args []string) {
-	args, err := fparser.Parse()
+	// Clear Opts, and parse new args using fp.
+	Opts = Config{}
+	args, err := fp.Parse()
 
 	if err != nil {
 		if flagerr, ok := err.(*flags.Error); ok {
@@ -46,7 +39,7 @@ func parseFlags() (args []string) {
 
 			case flags.ErrUnknownFlag:
 				fmt.Print("\n")
-				showHelp()
+				fp.WriteHelp(os.Stdout)
 				os.Exit(1)
 
 			default:

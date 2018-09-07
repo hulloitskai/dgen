@@ -58,14 +58,14 @@ func main() {
 
 		// Ensure that if extra info is about to be produced, there are at least two
 		// newlines before that info is printed.
-		if err != nil || Opts.Stats {
+		if err != nil || Opts.Stats { // extra info will be printed
 			if hasnl {
-				fmt.Print("\n")
+				out.Write([]byte{'\n'})
 			} else {
-				fmt.Print("\n\n")
+				io.WriteString(out, "\n\n")
 			}
 		} else if !Opts.Preserve && !hasnl {
-			fmt.Print("\n")
+			out.Write([]byte{'\n'})
 		}
 	}
 
@@ -74,7 +74,8 @@ func main() {
 	}
 
 	if Opts.Stats {
-		fmt.Printf("Successfully printed %d bytes in %s.\n", n, duration.String())
+		fmt.Fprintf(out, "Successfully printed %d bytes in %s.\n", n,
+			duration.String())
 	}
 }
 
