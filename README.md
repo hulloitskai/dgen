@@ -1,7 +1,6 @@
 # dgen
 
-_A command-line tool designed for repeating a string an excessive number of
-times._
+_A command-line tool for repeating a string an excessive number of times._
 
 [![godoc: reference][godoc-img]][godoc]
 [![go report card][goreportcard-img]][goreportcard]
@@ -10,6 +9,11 @@ times._
 [![codecov: coverage][codecov-img]][codecov]
 
 ## Installation
+
+Check out the [latest compiled release](https://github.com/stevenxie/dgen/releases)!
+
+To install from source, make sure you have [Go](https://golang.org) installed,
+and run:
 
 ```bash
 go get github.com/steven-xie/dgen
@@ -70,7 +74,7 @@ contains the actual repeating and buffering logic. To create a program with
 
 ```go
 import (
-  "github.com/steven-xie/dgen/throughput"
+  "github.com/stevenxie/dgen/throughput"
   "os"
 )
 
@@ -87,13 +91,13 @@ func main() {
 }
 ```
 
-[godoc-img]: https://godoc.org/github.com/steven-xie/dgen?status.svg
-[godoc]: https://godoc.org/github.com/steven-xie/dgen
-[travis-img]: https://travis-ci.org/steven-xie/dgen.svg?branch=master
-[travis]: https://travis-ci.org/steven-xie/dgen
-[codecov-img]: https://codecov.io/gh/steven-xie/dgen/branch/master/graph/badge.svg
-[codecov]: https://codecov.io/gh/steven-xie/dgen
+[godoc-img]: https://godoc.org/github.com/stevenxie/dgen?status.svg
+[godoc]: https://godoc.org/github.com/stevenxie/dgen
+[travis-img]: https://travis-ci.org/stevenxie/dgen.svg?branch=master
+[travis]: https://travis-ci.org/stevenxie/dgen
+[codecov-img]: https://codecov.io/gh/stevenxie/dgen/branch/master/graph/badge.svg
+[codecov]: https://codecov.io/gh/stevenxie/dgen
 [appveyor]: https://ci.appveyor.com/project/StevenXie/dgen-p2xgh
 [appveyor-img]: https://ci.appveyor.com/api/projects/status/wrry9krp1kkx4hsi/branch/master?svg=true
-[goreportcard]: https://goreportcard.com/report/github.com/steven-xie/dgen
-[goreportcard-img]: https://goreportcard.com/badge/github.com/steven-xie/dgen
+[goreportcard]: https://goreportcard.com/report/github.com/stevenxie/dgen
+[goreportcard-img]: https://goreportcard.com/badge/github.com/stevenxie/dgen
