@@ -1,40 +1,51 @@
-## ----- REPOSITORY -----
-## The compiled binary (excluding Go source files)
-/dgen*
-!/dgen*.*
-/dgen*.exe
+## [Repository]
+coverage.out
 
-## ---- CODECOV -----
-coverage.txt
+## The compiled binary (excluding Go source files):
+/build/
+/dist/
+/*begone*
+!/*begone*/
+!/*begone*.go
+## Secrets:
+.env
 
-## ----- GO -----
-## Binaries for programs and plugins
+
+## [Go]
+## Binaries for programs and plugins:
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
-
-## Test binary, build with `go test -c`
+## Test binary, build with `go test -c`.
 *.test
-
-## Output of the go coverage tool, specifically when used with LiteIDE
+## Output of the go coverage tool, specifically when used with LiteIDE.
 *.out
+## Vendored packages.
+vendor/
 
 
-## ----- OS -----
-## System Files – Mac OS X
+## [System Files]
+## macOS:
 .DS_Store
 .DS_Store?
 *.swp
 
-## System Files – Windows
+## Windows:
 Thumbs.db
 
-## ----- IDE -----
-## VSCode (keeping workspace configurations)
-.vscode/
+## VSCode (keeping workspace configurations):
+.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
-!.vscode/launch.json
+#!.vscode/launch.json
 !.vscode/extensions.json
+
+## IntelliJ
+.idea/
+
+
+## [Miscellaneous]
+## git-secret:
+.gitsecret/keys/random_seed

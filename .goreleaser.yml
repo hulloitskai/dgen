@@ -1,0 +1,90 @@
+## Scripts to run before anything else..
+before:
+  hooks:
+    - go mod download
+    ## If Go code needs to be generated:
+    # - go generate ./...
+
+## Configure how the binaries are built.
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - darwin
+      - linux
+
+    ldflags:
+      - "-X github.com/stevenxie/dgen/cmd.Version={{.Version}}"
+
+
+## Create an archive with built binaries and the README, license, etc.
+archive:
+  name_template: "{{.ProjectName}}-{{.Version}}-{{.Os}}-{{.Arch}}"
+  wrap_in_directory: true
+
+  replacements:
+    darwin: macOS
+    linux: linux
+    windows: win
+    i386: 386
+    amd64: x86_64
+
+  ## Pack archive on 'tar.gz' format on all platforms except Windows.
+  format: "tar.gz"
+  format_overrides:
+    - goos: windows
+      format: zip
+
+  files:
+    - LICENSE*
+    - README*
+    - autocomplete/**/*
+
+## Create a checksums file to allow verifying the integrity of the downloads.
+checksum:
+  name_template: checksums.txt
+
+## Generate a changelog using recent commits.
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+## Create a project snapshot without releasing.
+snapshot:
+  name_template: "{{.ShortCommit}}-SNAPSHOT"
+
+## Release to Github Releases.
+release:
+  name_template: "{{.ProjectName}}-{{.Tag}}"
+
+## Release to Homebrew.
+brew:
+  ## Formula information:
+  description: A CLI tool for repeating a string an excessive number of times.
+  homepage: https://github.com/stevenxie/dgen
+
+  ## Custom install / test scripts:
+  install: |
+    bin.install "dgen"
+    bash_completion.install "autocomplete/bash/dgen"
+    zsh_completion.install "autocomplete/zsh/dgen"
+
+  test: dgen --version
+
+  ## Brew tap information:
+  github:
+    owner: stevenxie
+    name: homebrew-tap
+
+  # Git author used to commit to the repository.
+  # Defaults are shown.
+  commit_author:
+    name: goreleaser-bot
+    email: dev@stevenxie.me
+
+  ## Where to put formula inside tap repository.
+  folder: Formula

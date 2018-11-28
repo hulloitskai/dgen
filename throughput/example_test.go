@@ -1,8 +1,9 @@
 package throughput_test
 
 import (
-	"github.com/steven-xie/dgen/throughput"
 	"os"
+
+	"github.com/stevenxie/dgen/throughput"
 )
 
 func Example() {

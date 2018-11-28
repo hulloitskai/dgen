@@ -1,12 +1,13 @@
 # dgen
 
-_A command-line tool for repeating a string an excessive number of times._
+_A CLI tool for repeating a string an excessive number of times._
 
-[![godoc: reference][godoc-img]][godoc]
-[![go report card][goreportcard-img]][goreportcard]
-[![travis: build][travis-img]][travis]
-[![appveyor: build][appveyor-img]][appveyor]
-[![codecov: coverage][codecov-img]][codecov]
+[![Github Release][release-img]][release]
+[![Godoc: Reference][godoc-img]][godoc]
+[![Go Report Card][grc-img]][grc]
+[![Travis: Build][travis-img]][travis]
+[![Appveyor: Build][appveyor-img]][appveyor]
+[![Codecov: Coverage][codecov-img]][codecov]
 
 ## Installation
 
@@ -16,7 +17,7 @@ To install from source, make sure you have [Go](https://golang.org) installed,
 and run:
 
 ```bash
-go get github.com/steven-xie/dgen
+go get github.com/stevenxie/dgen
 ```
 
 ## Usage
@@ -73,6 +74,8 @@ contains the actual repeating and buffering logic. To create a program with
 `dgen`'s string dumping capabilities, simply import `throughput`:
 
 ```go
+package main
+
 import (
   "github.com/stevenxie/dgen/throughput"
   "os"
@@ -80,7 +83,7 @@ import (
 
 
 func main() {
-  const (
+  var (
     repstr  = "test string "
     reps    = 5000
     bufsize = throughput.RecommendedBufSize
@@ -91,13 +94,15 @@ func main() {
 }
 ```
 
-[godoc-img]: https://godoc.org/github.com/stevenxie/dgen?status.svg
+[release]: https://github.com/stevenxie/dgen/releases
+[release-img]: https://img.shields.io/github/release/stevenxie/dgen.svg
 [godoc]: https://godoc.org/github.com/stevenxie/dgen
-[travis-img]: https://travis-ci.org/stevenxie/dgen.svg?branch=master
+[godoc-img]: https://godoc.org/github.com/stevenxie/dgen?status.svg
 [travis]: https://travis-ci.org/stevenxie/dgen
-[codecov-img]: https://codecov.io/gh/stevenxie/dgen/branch/master/graph/badge.svg
+[travis-img]: https://travis-ci.org/stevenxie/dgen.svg?branch=master
 [codecov]: https://codecov.io/gh/stevenxie/dgen
+[codecov-img]: https://codecov.io/gh/stevenxie/dgen/branch/master/graph/badge.svg
 [appveyor]: https://ci.appveyor.com/project/StevenXie/dgen-p2xgh
 [appveyor-img]: https://ci.appveyor.com/api/projects/status/wrry9krp1kkx4hsi/branch/master?svg=true
-[goreportcard]: https://goreportcard.com/report/github.com/stevenxie/dgen
-[goreportcard-img]: https://goreportcard.com/badge/github.com/stevenxie/dgen
+[grc]: https://goreportcard.com/report/github.com/stevenxie/dgen
+[grc-img]: https://goreportcard.com/badge/github.com/stevenxie/dgen

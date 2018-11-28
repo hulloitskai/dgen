@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+
+	ess "github.com/unixpickle/essentials"
 )
 
 // RecommendedBufSize is the buffer size recommended for Dump's bufsize
@@ -52,7 +54,7 @@ func Dump(s string, repeats, bufsize int, out io.Writer) (n int, err error) {
 			// This counts for bytes since output is actually written.
 			n += ntmp
 			if err != nil {
-				return n, fmt.Errorf("throughput: failed to write string to output: %v",
+				return n, ess.AddCtx("throughput: writing string to output",
 					err)
 			}
 			// We are done, since we do not have to deal with the buffer.
@@ -62,8 +64,7 @@ func Dump(s string, repeats, bufsize int, out io.Writer) (n int, err error) {
 		// This does not count for bytes since we are internally recording the
 		// result.
 		if _, err = buf.WriteString(s); err != nil {
-			return n, fmt.Errorf("throughput: failed to write string to internal "+
-				"buffer: %v", err)
+			return n, ess.AddCtx("throughput: writing string to internal buffer", err)
 		}
 
 		// If adding one more string to the buffer will make it larger than the
@@ -72,8 +73,8 @@ func Dump(s string, repeats, bufsize int, out io.Writer) (n int, err error) {
 			n64tmp, err = buf.WriteTo(out)
 			n += int(n64tmp)
 			if err != nil {
-				return n, fmt.Errorf("throughput: failed to write buffered string to "+
-					"output: %v", err)
+				return n, ess.AddCtx("throughput: writing buffered string to output",
+					err)
 			}
 
 			// Return if at the final iteration.
@@ -89,9 +90,8 @@ func Dump(s string, repeats, bufsize int, out io.Writer) (n int, err error) {
 	if usebuf {
 		// When we have a buffer, we always want to terminate within the for
 		// loop, so that we can empty the remaining contents of the buffer.
-		return n, errors.New("throughput: failed to terminate string-repeat loop " +
-			"correctly")
+		return n, errors.New("throughput: failed to properly terminate " +
+			"string-repeat loop")
 	}
-
 	return n, nil
 }

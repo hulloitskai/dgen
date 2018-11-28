@@ -4,7 +4,22 @@ ifeq ($(shell ls -1 go.mod 2> /dev/null),go.mod) # use module name from go.mod, 
 	PKG_NAME = $(shell basename "$$(cat go.mod | grep module | awk '{print $$2}')")
 endif
 
+VERSION = $(shell git describe --tags | cut -c 2-)
+
+## Directory of the 'main' package.
 MAINDIR = "."
+## Output directory to place artifacts from 'build' and 'build-all'.
+OUTDIR  = "."
+
+## Enable Go modules for this project.
+MODULES = true
+## Enable goreleaser for this project.
+GORELEASER = true
+## Enable git-secret for this project.
+SECRETS = false
+
+## Custom Go linker flags:
+LDFLAGS = -X github.com/stevenxie/$(PKG_NAME)/cmd.Version=$(VERSION)
 
 
 ## Source configs:
@@ -18,33 +33,73 @@ COVER_OUT = coverage.out
 
 
 ## ------ Commands (targets) -----
+.PHONY: default setup init
+
 ## Default target when no arguments are given to make (build and run program).
 default: build-run
 
+## Sets up this project on a new device.
+setup: hooks-setup
+	@if [ "$(SECRETS)" == true ]; then $(SECRETS_REVEAL_CM); fi
+	@if [ "$(MODULES)" == true ]; \
+	 then $(DL_CMD); \
+	 else $(GET_CMD); \
+	 fi
 
-## [Setup / configuration commands]
-.PHONY: default setup init verify dl vendor tidy update fix
+## Initializes this project from scratch.
+## Variables: MODPATH
+init: mod-init secrets-init goreleaser-init
 
-## Setup sets up a Go module by initializing the module and then verifying
-## its dependencies.
-setup: init verify
+
+## [Git, git-secret]
+.PHONY: hooks-setup secrets-hide secrets-reveal
+
+## Configure Git to use .githooks (for shared githooks).
+hooks-setup:
+	@echo "Configuring githooks..."
+	@git config core.hooksPath .githooks && echo "done"
+
+## Initialize git-secret.
+secrets-init:
+	@if [ "$(SECRETS)" == true ]; then \
+	   echo "Initializing git-secret..." && \
+	   git-secret init; \
+	 fi
+
+## Hide modified secret files using git-secret.
+secrets-hide:
+	@echo "Hiding modified secret files..."
+	@git secret hide -m
+
+## Reveal files hidden by git-secret.
+SECRETS_REVEAL_CM = git secret reveal
+secrets-reveal:
+	@echo "Revealing hidden secret files..."
+	@$(SECRETS_REVEAL_CM)
+
+
+## [Go: modules]
+.PHONY: init verify dl vendor tidy update fix
 
 ## Initializes a Go module in the current directory.
 ## Variables: MODPATH (module source path)
 MODPATH =
-init:
-	@printf "Initializing Go module...\n"
-	@go mod init $(MODPATH)
+mod-init:
+	@if [ "$(MODULE)" == true ]; then \
+	   echo "Initializing Go module..." && \
+	   go mod init $(MODPATH); \
+	 fi
 
 ## Verifies that Go module dependencies are satisfied.
-VERIFYCMD = echo "Verifying Go module dependencies..."; go mod verify
+VERIFY_CMD = echo "Verifying Go module dependencies..." && go mod verify
 verify:
-	@$(VERIFYCMD)
+	@$(VERIFY_CMD)
 
 ## Downloads Go module dependencies.
+DL_CMD = echo "Downloading Go module dependencies..." && \
+           go mod download && echo "done"
 dl:
-	@echo "Downloading Go module dependencies..."
-	@go mod download && echo "done"
+	@$(DL_CMD)
 
 ## Vendors Go module dependencies.
 vendor:
@@ -57,7 +112,8 @@ tidy:
 	@go mod tidy && echo "done"
 
 ## Installs and updates package dependencies.
-## Variables: UMODE (Update Mode, choose between patch and minor)
+## Variables:
+##   UMODE (Update Mode, choose between 'patch' and 'minor').
 UMODE =
 update:
 	@echo 'Updating module dependencies with "go get -u"...'
@@ -70,16 +126,17 @@ fix:
 	@go fix && echo "done"
 
 
-## [Legacy setup / configuration commands]
+## [Go: legacy setup]
 .PHONY: get
 
 ## Downloads and installs all subpackages (legacy).
+GET_CMD = echo "Installing dependencies... " && \
+          go get ./... && echo "done"
 get:
-	@echo "Installing dependencies... "
-	@go get ./... && echo "done"
+	@$(GET_CMD)
 
 
-## [Execution / installation commands]
+## [Go: setup, running]
 .PHONY: build build-all build-run run clean install
 
 ## Runs the built program.
@@ -87,34 +144,38 @@ get:
 ## Variables: SRCENV (boolean which determines whether or not to check and
 ##            source .env.sh)
 SRCENV = true
-RUNCMD = if [ -f ".env.sh" ] && [ "$(SRCENV)" == true ]; then \
-	  echo 'Configuring environment variables by sourcing ".env.sh"...'; \
-	  . .env.sh; \
+OUTPATH = $(OUTDIR)/$(PKG_NAME)
+RUN_CMD = \
+	if [ -f ".env.sh" ] && [ "$(SRCENV)" == true ]; then \
+	  echo 'Configuring environment variables by sourcing ".env.sh"...' && \
+	  . .env.sh && \
 	  printf "done\n\n"; \
 	fi; \
-	if [ -f "$(PKG_NAME)" ]; then \
-	  echo 'Running "$(PKG_NAME)"...'; \
-	  ./$(PKG_NAME); \
+	if [ -f "$(OUTPATH)" ]; then \
+	  echo 'Running "$(PKG_NAME)"...' && \
+	  ./$(OUTPATH); \
 	else \
-	  echo 'run: could not find program "$(PKG_NAME)".' >&2; \
+	  echo 'run: could not find program "$(OUTPATH)".' >&2; \
 	  exit 1; \
 	fi
 run:
-	@$(RUNCMD)
+	@$(RUN_CMD)
 
 ## Builds (compiles) the program for this system.
 ## Variables:
 ##   - OUTDIR (output directory to place built binaries)
 ##   - MAINDIR (directory of the main package)
 ##   - BUILDARGS (additional arguments to pass to "go build")
-OUTDIR = .
 BUILDARGS =
-BUILDCMD = echo 'Building "$(PKG_NAME)" for this system...'; \
-	go build -o "$$(echo $(OUTDIR) | tr -s '/')/$(PKG_NAME)" $(BUILDARGS) \
-	  $(MAINDIR) && \
+BUILD_CMD = \
+	echo 'Building "$(PKG_NAME)" for this system...' && \
+	go build \
+	  -o "$$(echo $(OUTDIR) | tr -s '/')/$(PKG_NAME)" \
+	  -ldflags "$(LDFLAGS)" \
+	  $(BUILDARGS) $(MAINDIR) && \
 	echo "done"
 build:
-	@$(BUILDCMD)
+	@$(BUILD_CMD)
 
 ## Builds (cross-compiles) the program for all systems.
 ## Variables:
@@ -124,26 +185,30 @@ build:
 build-all:
 	@echo 'Building "$(PKG_NAME)" for all systems:'
 	@for GOOS in darwin linux windows; do \
-		for GOARCH in amd64 386; do \
-		  printf "Building GOOS=$$GOOS GOARCH=$$GOARCH... "; \
-		  OUTNAME="$(PKG_NAME)-$$GOOS-$$GOARCH"; \
-		  if [ $$GOOS == windows ]; then OUTNAME="$$OUTNAME.exe"; fi; \
-		  GOBUILD_OUT="$$(GOOS=$$GOOS GOARCH=$$GOARCH go build \
-		    -o "$$(echo $(OUTDIR) | tr -s '/')/$$OUTNAME" $(BUILDARGS) \
-		    $(MAINDIR) 2>&1)"; \
-		  if [ -n "$$GOBUILD_OUT" ]; then \
-		    printf "\nError during build:\n" >&2; \
-		    echo "$$GOBUILD_OUT" >&2; \
-		    exit 1; \
-		  else echo "done"; \
-		  fi; \
-		done; \
-	done
+	   for GOARCH in amd64 386; do \
+	     printf "Building GOOS=$$GOOS GOARCH=$$GOARCH... " && \
+	     OUTNAME="$(PKG_NAME)-$$GOOS-$$GOARCH"; \
+	     if [ $$GOOS == windows ]; then \
+	       OUTNAME="$$OUTNAME.exe"; \
+	     fi; \
+	     GOBUILD_OUT="$$(GOOS=$$GOOS GOARCH=$$GOARCH && \
+	       go build \
+	         -o "$$(echo $(OUTDIR) | tr -s '/')/$$OUTNAME" \
+	         -ldflags "$(LDFLAGS)" \
+	         $(BUILDARGS) $(MAINDIR) 2>&1)"; \
+	     if [ -n "$$GOBUILD_OUT" ]; then \
+	       printf "\nError during build:\n" >&2 && \
+	        echo "$$GOBUILD_OUT" >&2 && \
+	        exit 1; \
+	     else printf "\tdone\n"; \
+	     fi; \
+	   done; \
+	 done
 
 ## Builds (compiles) the program for this system, and runs it.
 ## Sources .env.sh before running, if it exists.
 build-run:
-	@$(BUILDCMD) && echo "" && $(RUNCMD)
+	@$(BUILD_CMD) && echo "" && $(RUN_CMD)
 
 ## Cleans build artifacts (executables, object files, etc.).
 clean:
@@ -156,75 +221,77 @@ install:
 	@go install && echo "done"
 
 
-## [Source code inspection commands]
+## [Go: code checking]
 .PHONY: fmt lint vet check
 
 ## Formats the source code using "gofmt".
-FMTCMD = if ! which gofmt > /dev/null; then \
+FMT_CMD = \
+	if ! which gofmt > /dev/null; then \
 	  echo '"gofmt" is required to format source code.'; \
 	else \
-	  echo 'Formatting source code using "gofmt"...'; \
+	  echo 'Formatting source code using "gofmt"...' && \
 	  gofmt -l -s -w . && echo "done"; \
 	fi
 fmt:
-	@$(FMTCMD)
+	@$(FMT_CMD)
 
 ## Lints the source code using "golint".
-LINTCMD = if ! which golint > /dev/null; then \
-	  echo '"golint" is required to lint soure code.'; \
+LINT_CMD = \
+	if ! which golint > /dev/null; then \
+	  echo '"golint" is required to lint soure code.' >&2; \
 	else \
-	  echo 'Formatting source code using "golint"...'; \
+	  echo 'Formatting source code using "golint"...' && \
 	  golint ./... && echo "done"; \
 	fi
 lint:
-	@$(LINTCMD)
+	@$(LINT_CMD)
 
-## Checking for suspicious code using "go vet".
-VETCMD = echo 'Checking for suspicious code using "go vet"...'; \
-	go vet && echo "done"
+## Checks for suspicious code using "go vet".
+VET_CMD = echo 'Checking for suspicious code using "go vet"...' && \
+	      go vet && echo "done"
 vet:
-	@$(VETCMD)
+	@$(VET_CMD)
 
 ## Checks for formatting, linting, and suspicious code.
-CHECKCMD = $(FMTCMD) && echo "" && $(LINTCMD) && echo "" && $(VETCMD)
+CHECK_CMD = $(FMT_CMD) && echo "" && $(LINT_CMD) && echo "" && $(VET_CMD)
 check:
-	@$(CHECKCMD)
+	@$(CHECK_CMD)
 
 
-## [Testing commands]
+## [Go: testing]
 .PHONY: test test-v test-race test-race-v bench bench-v
 
-TESTCMD = go test ./... -coverprofile=$(COVER_OUT) \
-		               -covermode=atomic \
-		               -timeout=$(TEST_TIMEOUT)
+TEST_CMD = go test ./... -coverprofile=$(COVER_OUT) \
+                         -covermode=atomic \
+                         -timeout=$(TEST_TIMEOUT)
 test:
 	@echo "Testing:"
-	@$(TESTCMD)
+	@$(TEST_CMD)
 test-v:
 	@echo "Testing (verbose):"
-	@$(TESTCMD) -v
+	@$(TEST_CMD) -v
 
-TESTCMD_RACE = $(TESTCMD) -race
+TEST_CMD_RACE = $(TEST_CMD) -race
 test-race:
 	@echo "Testing (race):"
-	@$(TESTCMD_RACE)
+	@$(TEST_CMD_RACE)
 test-race-v:
-	@printf "Testing (race, verbose):\n"
-	@$(TESTCMD_RACE) -v
+	@echo "Testing (race, verbose):"
+	@$(TEST_CMD_RACE) -v
 
-BENCHCMD = $(TESTCMD) ./... -run=^$$ -bench=. -benchmem
+BENCH_CMD = $(TEST_CMD) ./... -run=^$$ -bench=. -benchmem
 bench:
-	@printf "Benchmarking:\n"
-	@$(BENCHCMD)
+	@echo "Benchmarking:"
+	@$(BENCH_CMD)
 bench-v:
-	@printf "Benchmarking (verbose):\n"
-	@$(BENCHCMD) -v
+	@echo "Benchmarking (verbose):"
+	@$(BENCH_CMD) -v
 
 
-## [Reviewing commands]
-.PHONY: review review-race review-bench check fmt
+## [Go: reviewing]
+.PHONY: review review-race review-bench
 __review_base:
-	@$(VERIFYCMD) && echo "" && $(CHECKCMD) && echo ""
+	@$(VERIFY_CMD) && echo "" && $(CHECK_CMD) && echo ""
 
 ## Formats, checks, and tests the code.
 review: __review_base test
@@ -239,69 +306,18 @@ review-bench: review-race bench
 review-bench-v: review-race bench-v
 
 
-## [Custom environments]
-.PHONY: env
-ENV = dev
+## [Goreleaser]
+.PHONY: goreleaser-init release
 
-## Set ENV to the environment variable 'MAKE_ENV', if it exists
-SHELL_ENV = $(shell echo $$MAKE_ENV)
-ifneq ($(SHELL_ENV),)
-	ENV = $(SHELL_ENV)
-endif
+goreleaser-init:
+	@if [ "$(GORELEASER)" == true ]; then \
+	   echo "Initializing goreleaser..." && \
+	   goreleaser init; \
+	 fi
 
-env:
-	@echo $(ENV)
+release:
+	@echo "Releasing with 'goreleaser'..." && goreleaser --rm-dist
 
-
-## [Docker commands]
-.PHONY: up down up-logs reload reload-logs compose
-DK = docker
-DKCMP = $(DK)-compose
-
-DKCMP_FLAGS = -f docker-compose.yml -f docker-compose.dev.yml
-ifeq ($(ENV),prod)
-	DKCMP_FLAGS = -f docker-compose.yml -f docker-compose.prod.yml
-endif
-
-DKCMP_CMD = $(DKCMP) $(DKCMP_FLAGS)
-
-up:
-	@$(DKCMP_CMD) up -d $(TARG)
-down:
-	@$(DKCMP_CMD) down $(TARG)
-
-TARG =
-logs:
-	@$(DKCMP_CMD) logs -f $(TARG)
-
-## "up" command variants:
-up-logs: up logs
-
-reload: down up
-reload-logs: down up-logs
-
-CMD =
-compose:
-	@$(DKCMP_CMD) $(CMD)
-
-dk-build:
-	@$(DKCMP_CMD) build
-
-push:
-	@$(DKCMP_CMD) push
-
-
-## [git and git-secret commands]
-.PHONY: git-setup hide
-
-## setup will configure Git to use the hooks in .githooks/. Should be run
-## after first clone.
-git-setup:
-	@echo "Setting up pre-commit hook..." && \
-	 git config core.hooksPath .githooks
-hide:
-	@echo "Hiding modified secret files..." && \
-	 git secret hide -m
-reveal:
-	@echo "Revealing hidden files..." && \
-	 git secret reveal
+snapshot:
+	@echo "Making snapshot with 'goreleaser'..." && \
+	   goreleaser --snapshot --rm-dist
