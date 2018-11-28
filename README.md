@@ -9,15 +9,31 @@ _A CLI tool for repeating a string an excessive number of times._
 [![Appveyor: Build][appveyor-img]][appveyor]
 [![Codecov: Coverage][codecov-img]][codecov]
 
+> Also check out [`begone`](https://github.com/stevenxie/begone), a fully
+> automatic spamming tool for Facebook Messenger.
+
 ## Installation
 
-Check out the [latest compiled release](https://github.com/stevenxie/dgen/releases)!
+If you're on macOS, you can get `dgen` on Homebrew:
+```bash
+brew install stevenxie/tap/dgen
+```
 
+Otherwise, check out the
+[latest compiled release](https://github.com/stevenxie/dgen/releases)!
+
+## Making from source
 To install from source, make sure you have [Go](https://golang.org) installed,
 and run:
 
 ```bash
-go get github.com/stevenxie/dgen
+## Clone the repository.
+$ git clone git@github.com:stevenxie/dgen
+$ cd dgen
+
+## Install dependencies, and then install to $GOBIN.
+$ make dl       # (or go mod download)
+$ make install  # (or go install)
 ```
 
 ## Usage
