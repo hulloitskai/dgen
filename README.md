@@ -3,7 +3,7 @@
 _A CLI tool for repeating a string an excessive number of times._
 
 [![Github Release][release-img]][release]
-[![Godoc: Reference][godoc-img]][godoc]
+[![GoDoc: Reference][godoc-img]][godoc]
 [![Go Report Card][grc-img]][grc]
 [![Travis: Build][travis-img]][travis]
 [![Appveyor: Build][appveyor-img]][appveyor]
@@ -15,6 +15,7 @@ _A CLI tool for repeating a string an excessive number of times._
 ## Installation
 
 If you're on macOS, you can get `dgen` on Homebrew:
+
 ```bash
 brew install stevenxie/tap/dgen
 ```
@@ -23,6 +24,7 @@ Otherwise, check out the
 [latest compiled release](https://github.com/stevenxie/dgen/releases)!
 
 ## Making from source
+
 To install from source, make sure you have [Go](https://golang.org) installed,
 and run:
 
@@ -109,6 +111,13 @@ func main() {
   throughput.Dump(repstr, reps, bufsize, os.Stdout)
 }
 ```
+
+<br />
+
+# Development
+
+If you want to help develop `dgen`, clone the repository and run `make setup`
+to configure your development environment.
 
 [release]: https://github.com/stevenxie/dgen/releases
 [release-img]: https://img.shields.io/github/release/stevenxie/dgen.svg

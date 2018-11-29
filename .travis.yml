@@ -13,14 +13,16 @@ os:
 
 env:
   global:
-    - GOLINT_BIN="$GOPATH/bin/golint"
-    - GO111MODULE="on"
+    - GO111MODULE=on
+    - GOPATH="${TRAVIS_HOME}/gopath"
+    - GOBIN="${GOPATH}/bin"
+    - GOLINT="${GOBIN}/golint"
+    - PATH="${GOBIN}:${PATH}"
 
-## Cache Golint installation.
 cache:
   directories:
     ## Preserve golint executable.
-    - $GOLINT_BIN
+    - $GOBIN
     ## Preserve Go module cache.
     - $GOPATH/pkg/mod/cache
 
@@ -32,8 +34,16 @@ matrix:
 
 ## Install dependencies and code review tools.
 before_install:
-  ## Install Golint, if no installation cache exists.
-  - if [ ! -e "$GOLINT_BIN" ]; then go get -u golang.org/x/lint/golint; fi
+  - echo "GOBIN=$GOBIN" "GOLINT_BIN=$GOLINT_BIN"
+
+  ## Install golint, if no installation cache exists.
+  - |
+    if ! command -v golint > /dev/null; then
+      rm -rf $GOLINT_BIN
+      echo "Installing 'golint'..."
+      GO111MODULE=off go get -u golang.org/x/lint/golint
+    fi
+  - command -v golint
 
   ## Install clipboard program if necessary.
   - |
@@ -42,9 +52,10 @@ before_install:
       sudo apt-get install xclip;
     fi
 
+
+## Install all dependencies, start dependency services.
 install:
-  ## Install all dependencies.
-  - make get
+  - make dl
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
       export DISPLAY=:99.0
@@ -55,6 +66,7 @@ install:
 before_script:
   - go env
 
+## Check code, perform tests with race-condition-checking.
 script: make review-race-v
 
 after_success:
