@@ -4,11 +4,15 @@ coverage.out
 ## The compiled binary (excluding Go source files):
 /build/
 /dist/
-/*begone*
-!/*begone*/
-!/*begone*.go
+/*dgen*
+!/*dgen*.*
+/*dgen*.exe
+
 ## Secrets:
 .env
+
+## git-secret:
+.gitsecret/keys/random_seed
 
 
 ## [Go]
@@ -44,8 +48,3 @@ Thumbs.db
 
 ## IntelliJ
 .idea/
-
-
-## [Miscellaneous]
-## git-secret:
-.gitsecret/keys/random_seed
