@@ -3,7 +3,6 @@
 _A CLI tool for repeating a string an excessive number of times._
 
 [![Github Release][release-img]][release]
-[![GoDoc: Reference][godoc-img]][godoc]
 [![Go Report Card][grc-img]][grc]
 [![Travis: Build][travis-img]][travis]
 [![Appveyor: Build][appveyor-img]][appveyor]
@@ -65,7 +64,7 @@ dgen "👀 " fb
 
 #### List of current `dgen` presets:
 
-| Name / ID | Value  | service            |
+| Name / ID | Value  | Service            |
 | --------- | ------ | ------------------ |
 | fb        | 5000   | Facebook Messenger |
 | twitter   | 280    | Twitter            |
@@ -121,8 +120,6 @@ to configure your development environment.
 
 [release]: https://github.com/stevenxie/dgen/releases
 [release-img]: https://img.shields.io/github/release/stevenxie/dgen.svg
-[godoc]: https://godoc.org/github.com/stevenxie/dgen
-[godoc-img]: https://godoc.org/github.com/stevenxie/dgen?status.svg
 [travis]: https://travis-ci.org/stevenxie/dgen
 [travis-img]: https://travis-ci.org/stevenxie/dgen.svg?branch=master
 [codecov]: https://codecov.io/gh/stevenxie/dgen
