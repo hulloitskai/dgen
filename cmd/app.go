@@ -6,21 +6,13 @@ import (
 	"os"
 
 	"github.com/alecthomas/kingpin"
+	"github.com/stevenxie/dgen/internal/info"
 )
 
-var (
-	// Version is the program version. To be generated upon compilation by:
-	//   -ldflags "-X github.com/stevenxie/dgen/cmd.Version=$(VERSION)"
-	//
-	// It should match the output of the following command:
-	//   git describe --tags | cut -c 2-
-	Version = "unknown"
-
-	app = kingpin.New(
-		"dgen",
-		"A CLI tool for repeating a string an excessive number of times.",
-	).Version(Version)
-)
+var app = kingpin.New(
+	"dgen",
+	"A CLI tool for repeating a string an excessive number of times.",
+).Version(info.Version)
 
 func init() {
 	// Customize help, version flag.

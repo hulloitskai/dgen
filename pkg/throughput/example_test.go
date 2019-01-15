@@ -3,7 +3,7 @@ package throughput_test
 import (
 	"os"
 
-	"github.com/stevenxie/dgen/throughput"
+	"github.com/stevenxie/dgen/pkg/throughput"
 )
 
 func Example() {

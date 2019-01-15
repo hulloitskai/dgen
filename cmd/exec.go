@@ -8,13 +8,13 @@ import (
 
 	"github.com/alecthomas/kingpin"
 	"github.com/steven-xie/glip"
-	"github.com/stevenxie/dgen/throughput"
+	"github.com/stevenxie/dgen/pkg/throughput"
 )
 
 // Exec is the program entrypoint.
-func Exec() {
+func Exec(args []string) {
 	// Parse options.
-	kingpin.MustParse(app.Parse(os.Args[1:]))
+	kingpin.MustParse(app.Parse(args))
 
 	// Initialize variables.
 	var (

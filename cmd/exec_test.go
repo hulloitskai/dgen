@@ -2,12 +2,10 @@ package cmd_test
 
 import (
 	"bytes"
-	"os"
 	"testing"
 
-	"github.com/stevenxie/dgen/cmd"
-
 	"github.com/steven-xie/glip"
+	"github.com/stevenxie/dgen/cmd"
 )
 
 func TestExec(t *testing.T) {
@@ -21,8 +19,8 @@ func TestExec(t *testing.T) {
 	cmd.Opts.Out = buf
 
 	// Equivalent to: ./dgen "a"
-	os.Args = []string{"dgen", in}
-	cmd.Exec()
+	args := []string{in}
+	cmd.Exec(args)
 
 	// Check result.
 	if res := buf.String(); res != expect {
@@ -43,8 +41,8 @@ func TestExec_customreps(t *testing.T) {
 
 	// Simulate program running with these arguments.
 	// Equivalent to: ./dgen "testing text " 3
-	os.Args = []string{"dgen", in, repstr}
-	cmd.Exec()
+	args := []string{in, repstr}
+	cmd.Exec(args)
 
 	// Check result.
 	if res := buf.String(); res != expect {
@@ -59,8 +57,8 @@ func TestExec_copyflag(t *testing.T) {
 		expect = "testing text testing text "
 	)
 
-	os.Args = []string{"dgen", "-c", in, repstr}
-	cmd.Exec()
+	args := []string{"-c", in, repstr}
+	cmd.Exec(args)
 
 	out, err := glip.ReadString()
 	if err != nil {

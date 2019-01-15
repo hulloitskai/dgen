@@ -5,7 +5,6 @@ _A CLI tool for repeating a string an excessive number of times._
 [![Github Release][release-img]][release]
 [![Go Report Card][grc-img]][grc]
 [![Travis: Build][travis-img]][travis]
-[![Appveyor: Build][appveyor-img]][appveyor]
 [![Codecov: Coverage][codecov-img]][codecov]
 
 > Also check out [`begone`](https://github.com/stevenxie/begone), a fully
@@ -124,7 +123,5 @@ to configure your development environment.
 [travis-img]: https://travis-ci.org/stevenxie/dgen.svg?branch=master
 [codecov]: https://codecov.io/gh/stevenxie/dgen
 [codecov-img]: https://codecov.io/gh/stevenxie/dgen/branch/master/graph/badge.svg
-[appveyor]: https://ci.appveyor.com/project/StevenXie/dgen-p2xgh
-[appveyor-img]: https://ci.appveyor.com/api/projects/status/wrry9krp1kkx4hsi/branch/master?svg=true
 [grc]: https://goreportcard.com/report/github.com/stevenxie/dgen
 [grc-img]: https://goreportcard.com/badge/github.com/stevenxie/dgen

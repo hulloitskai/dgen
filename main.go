@@ -8,9 +8,13 @@
 //
 package main
 
-import "github.com/stevenxie/dgen/cmd"
+import (
+	"os"
+
+	"github.com/stevenxie/dgen/cmd"
+)
 
 func main() {
 	// Execute program.
-	cmd.Exec()
+	cmd.Exec(os.Args[1:])
 }
